@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import React, { useState, useEffect, ReactNode } from "react";
+import dayjs from "dayjs";
 interface Data {
   tranDate: string;
   tranHour: string;
@@ -26,15 +27,16 @@ interface Data {
 }
 
 async function getData(month: number) {
-  if (month === 4) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-  }
-  const upperBound = ["7", "7", "7"];
-  const url = `/data/settle-value?startDate=2024-${month
-    .toString()
-    .padStart(2, "0")}-01&endDate=2024-${month.toString().padStart(2, "0")}-${
-    upperBound[month - 3]
-  }`;
+  // if (month === 4) {
+  //   await new Promise((resolve) => setTimeout(resolve, 2000));
+  // }
+  const url = `/data/settle-value?startDate=${dayjs()
+    .month(month - 1)
+    .startOf("month")
+    .format("YYYY-MM-DD")}&endDate=${dayjs()
+    .month(month - 1)
+    .endOf("month")
+    .format("YYYY-MM-DD")}`;
   const response = await fetch(url);
   const data = (await response.json()) as Data[];
   return data;
@@ -46,7 +48,6 @@ export default function Part1() {
   const [dataMonth, setDataMonth] = useState(3);
   useEffect(() => {
     let ignore = false;
-    console.log("fetching data");
     setData(null);
     setIsLoading(true);
     setDataError(null);

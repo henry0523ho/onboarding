@@ -26,8 +26,11 @@ interface Data {
 }
 
 async function getData(month: number) {
-  const upperBound = ["31", "30", "31"];
-  const url = `http://localhost:3000/data/settle-value?startDate=2024-${month
+  if (month === 4) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+  const upperBound = ["7", "7", "7"];
+  const url = `/data/settle-value?startDate=2024-${month
     .toString()
     .padStart(2, "0")}-01&endDate=2024-${month.toString().padStart(2, "0")}-${
     upperBound[month - 3]
@@ -56,42 +59,45 @@ export default function Part1() {
       });
   }, [dataMonth]);
 
-  if (dataError !== null) {
-    return "Error: " + dataError;
-  }
-  if (isLoading) {
-    return "Loading...";
-  }
-
-  // Empty state
-  if (data === null || data.length === 0) {
-    return "No data";
-  }
-
   return (
     <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
       <h1>{dataMonth}月的資料</h1>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart
-          data={data}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="tranDate" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="srBid"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
       <button onClick={() => setDataMonth(3)}>3月</button>
       <button onClick={() => setDataMonth(4)}>4月</button>
       <button onClick={() => setDataMonth(5)}>5月</button>
+      {(function () {
+        if (dataError !== null) {
+          return "Error: " + dataError;
+        }
+        if (isLoading) {
+          return "Loading...";
+        }
+
+        // Empty state
+        if (data === null || data.length === 0) {
+          return "No data";
+        }
+        return (
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={data}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="tranDate" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="srBid"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      })()}
     </div>
   );
 }

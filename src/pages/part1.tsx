@@ -58,13 +58,17 @@ export default function Part1() {
         setDataError(err.message);
       });
   }, [dataMonth]);
-
+  const toggleDataMonth = (month: number) => {
+    if(isLoading===false){
+      setDataMonth(month);
+    }
+  }
   return (
     <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
       <h1>{dataMonth}月的資料</h1>
-      <button onClick={() => setDataMonth(3)}>3月</button>
-      <button onClick={() => setDataMonth(4)}>4月</button>
-      <button onClick={() => setDataMonth(5)}>5月</button>
+      <button onClick={() => toggleDataMonth(3)}>3月</button>
+      <button onClick={() => toggleDataMonth(4)}>4月</button>
+      <button onClick={() => toggleDataMonth(5)}>5月</button>
       {(function () {
         if (dataError !== null) {
           return "Error: " + dataError;

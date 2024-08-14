@@ -34,7 +34,7 @@ async function getData() {
   return data;
 }
 export default function Part1() {
-  const [data, setData] = useState<Data[]>([]);
+  const [data, setData] = useState<Data[]|null>(null);
   const [dataError, setDataError] = useState<string>("");
   useEffect(() => {
     getData()
@@ -46,7 +46,7 @@ export default function Part1() {
   return (
     <div>
       {dataError === "" ? (
-        data.length != 0 ? (
+        data ? (
           <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
             <ResponsiveContainer width="100%" height={400}>
               <LineChart

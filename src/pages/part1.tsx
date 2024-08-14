@@ -50,20 +50,22 @@ export default function Part1() {
     setData(null);
     setIsLoading(true);
     setDataError(null);
-    if(ignore===false){
-      getData(dataMonth)
+    getData(dataMonth)
       .then((responseData) => {
-        setData(responseData);
-        setIsLoading(false);
+        if (ignore === false) {
+          setData(responseData);
+          setIsLoading(false);
+        }
       })
       .catch((err) => {
-        setDataError(err.message);
+        if (ignore === false) {
+          setDataError(err.message);
+          setIsLoading(false);
+        }
       });
-      return ()=>{
-        ignore=true;
-      }
-    }
-    
+    return () => {
+      ignore = true;
+    };
   }, [dataMonth]);
   return (
     <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">

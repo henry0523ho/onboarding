@@ -35,45 +35,51 @@ async function getData() {
 }
 export default function Part1() {
   const [data, setData] = useState<Data[] | null>(null);
-  const [dataError, setDataError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
   useEffect(() => {
     getData()
       .then((responseData) => {
         setData(responseData);
+        setIsLoading(false);
       })
       .catch((err) => {
         setDataError(err.message);
       });
   }, []);
-  const content = (): ReactNode => {
-    if (dataError !== "") {
-      return ("Error: " + dataError) as ReactNode;
-    }
-    if (data === null) {
-      return "Loading..." as ReactNode;
-    }
-    return (
-      <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="tranDate" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="srBid"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    ) as ReactNode;
-  };
-  return <div>{content()}</div>;
+
+  if (dataError !== null) {
+    return "Error: " + dataError;
+  }
+  if (isLoading) {
+    return "Loading...";
+  }
+
+  // Empty state
+  if (data === null || data.length === 0) {
+    return "No data";
+  }
+
+  return (
+    <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="tranDate" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="srBid"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 }

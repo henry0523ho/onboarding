@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 interface Data {
   tranDate: string;
   tranHour: string;
@@ -34,45 +34,52 @@ async function getData() {
   return data;
 }
 export default function Part1() {
-  const [data, setData] = useState<Data[]>([]);
-  const [dataError, setDataError] = useState<string>("");
+  const [data, setData] = useState<Data[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
   useEffect(() => {
     getData()
-      .then((responseData) => setData(responseData))
+      .then((responseData) => {
+        setData(responseData);
+        setIsLoading(false);
+      })
       .catch((err) => {
         setDataError(err.message);
       });
   }, []);
+
+  if (dataError !== null) {
+    return "Error: " + dataError;
+  }
+  if (isLoading) {
+    return "Loading...";
+  }
+
+  // Empty state
+  if (data === null || data.length === 0) {
+    return "No data";
+  }
+
   return (
-    <div>
-      {dataError === "" ? (
-        data.length != 0 ? (
-          <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart
-                data={data}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="tranDate" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="srBid"
-                  stroke="#8884d8"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          "Loading..."
-        )
-      ) : (
-        "error:" + dataError
-      )}
+    <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
+      <ResponsiveContainer width="100%" height={400}>
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="tranDate" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="srBid"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }

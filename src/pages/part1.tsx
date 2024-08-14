@@ -1,4 +1,3 @@
-"use client";
 import {
   CartesianGrid,
   Legend,
@@ -26,9 +25,13 @@ interface Data {
   supPrice: number;
 }
 
-async function getData() {
-  const url =
-    "http://localhost:3000/data/settle-value?startDate=2024-03-05&endDate=2024-03-10";
+async function getData(month: number) {
+  const upperBound = ["31", "30", "31"];
+  const url = `http://localhost:3000/data/settle-value?startDate=2024-${month
+    .toString()
+    .padStart(2, "0")}-01&endDate=2024-${month.toString().padStart(2, "0")}-${
+    upperBound[month - 3]
+  }`;
   const response = await fetch(url);
   const data = (await response.json()) as Data[];
   return data;
@@ -37,8 +40,13 @@ export default function Part1() {
   const [data, setData] = useState<Data[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
+  const [dataMonth, setDataMonth] = useState(3);
   useEffect(() => {
-    getData()
+    console.log("fetching data");
+    setData(null);
+    setIsLoading(true);
+    setDataError(null);
+    getData(dataMonth)
       .then((responseData) => {
         setData(responseData);
         setIsLoading(false);
@@ -46,7 +54,7 @@ export default function Part1() {
       .catch((err) => {
         setDataError(err.message);
       });
-  }, []);
+  }, [dataMonth]);
 
   if (dataError !== null) {
     return "Error: " + dataError;
@@ -62,6 +70,7 @@ export default function Part1() {
 
   return (
     <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
+      <h1>{dataMonth}月的資料</h1>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart
           data={data}
@@ -80,6 +89,9 @@ export default function Part1() {
           />
         </LineChart>
       </ResponsiveContainer>
+      <button onClick={() => setDataMonth(3)}>3月</button>
+      <button onClick={() => setDataMonth(4)}>4月</button>
+      <button onClick={() => setDataMonth(5)}>5月</button>
     </div>
   );
 }

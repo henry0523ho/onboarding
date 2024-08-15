@@ -59,7 +59,8 @@ function Part4(props: Part4Props) {
   const { data, status, error } = useQuery({
     queryFn: () => getData(dataMonth),
     queryKey: [dataMonth],
-    placeholderData: props.marchData,
+    // placeholderData: props.marchData,
+    initialData: dataMonth === 3 ? props.marchData : undefined,
   });
   return (
     <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">

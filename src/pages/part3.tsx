@@ -50,10 +50,13 @@ async function getData(month: number = 3) {
 
 function Part3() {
   const [dataMonth, setDataMonth] = useState(3);
-  const { data, isLoading, error } = useQuery({
-    queryFn: () => getData(dataMonth),
-    queryKey: [dataMonth],
-  },queryClient);
+  const { data, status, error } = useQuery(
+    {
+      queryFn: () => getData(dataMonth),
+      queryKey: [dataMonth],
+    },
+    queryClient
+  );
   return (
     <QueryClientProvider client={queryClient}>
       <div className="w-2/5 bg-secondary p-8 rounded-lg mt-6 text-center">
@@ -62,15 +65,17 @@ function Part3() {
         <button onClick={() => setDataMonth(4)}>4月</button>
         <button onClick={() => setDataMonth(5)}>5月</button>
         {(function () {
-          if (error !== null) {
+          if (status === "error") {
             return "Error: " + error;
           }
-          if (isLoading) {
+
+          status;
+          if (status === "pending") {
             return "Loading...";
           }
 
           // Empty state
-          if (data === undefined || data.length === 0) {
+          if (data.length === 0) {
             return "No data";
           }
           return (
